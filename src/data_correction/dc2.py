@@ -18,7 +18,34 @@ class TransformerOnTrainAndTest(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         df = X
 
-        df = df.drop(columns=["Iron_num"])
+        # Chuyển kiểu dữ liệu cột year_nom từ int sang string
+        col_name = "year_nom"
+        df[col_name] = df[col_name].astype("string")
+
+        # Ứng với từng cột trên (ngoại trừ cột numcat), thay thế các giá trị không nằm trong các label xuất hiện nhiều nhất thành 'other'
+        most_frequent_values_dict = {
+            "year_nom": ["2012", "2013", "2014"],
+            "make_nom": ["Ford", "Chevrolet", "Nissan"],
+            "model_nom": ["Altima"],
+            "trim_nom": ["Base", "SE"],
+            "body_nom": ["Sedan", "SUV"],
+            "transmission_nom": ["automatic"],
+            "state_nom": ["fl", "ca", "pa"],
+            "color_nom": ["black", "white", "silver", "gray"],
+            "interior_nom": ["black", "gray"],
+            "seller_nom": [
+                "nissan-infiniti lt",
+                "ford motor credit company llc",
+                "the hertz corporation",
+            ],
+        }
+
+        for col_name, most_frequent_values in most_frequent_values_dict.items():
+            df[col_name] = df[col_name].str.strip()  # Loại bỏ khoảng trắng thừa
+            index_non_most_frequent = df[col_name].index[
+                ~df[col_name].isin(most_frequent_values)
+            ]
+            df.loc[index_non_most_frequent, col_name] = "other"
 
         return df
 
@@ -33,12 +60,6 @@ class TransformerOnTrain(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None):
         df = X
-
-        cols = [
-            "Nitrate_num",
-            "Chloride_num",
-        ]
-        df[cols] = 0
 
         self.is_fitted_ = True
         return df
