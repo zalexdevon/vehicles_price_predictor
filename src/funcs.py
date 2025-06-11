@@ -10,10 +10,8 @@ import os
 def create_feature_and_target_transformer(
     categories_for_OrdinalEncoder_dict, class_names
 ):
-    feature_transformer = (
-        FeatureColumnsTransformer(
-            categories_for_OrdinalEncoder_dict=categories_for_OrdinalEncoder_dict
-        ),
+    feature_transformer = FeatureColumnsTransformer(
+        categories_for_OrdinalEncoder_dict=categories_for_OrdinalEncoder_dict
     )
 
     target_transformer = OrdinalEncoder(categories=[class_names])
