@@ -12,6 +12,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 from src import const, funcs
+import traceback
 
 
 class ModelTrainer:
@@ -96,6 +97,7 @@ class ModelTrainer:
                 # Giải phóng bộ nhớ
 
             except:
+                traceback.print_exc()
                 continue
 
         # In ra kết quả của model tốt nhất
