@@ -26,6 +26,9 @@ def transform_data(
     target_transformer,
     target_col,
 ):
+    # TODO: d
+    print("Update lần 1")
+    # d
     # Fit và transform tập train
     df_train_target = df_train_corrected[[target_col]]
     df_train_corrected = df_train_corrected.drop(columns=[target_col])
