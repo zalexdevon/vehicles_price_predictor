@@ -1,8 +1,6 @@
-from Mylib import myfuncs, sk_create_model, sk_myfuncs, sk_create_object
+from Mylib import myfuncs, sk_myfuncs, sk_create_object
 from Mylib.myclasses import FeatureColumnsTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OrdinalEncoder, MinMaxScaler
+from sklearn.preprocessing import OrdinalEncoder
 import pandas as pd
 import os
 
