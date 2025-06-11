@@ -98,6 +98,7 @@ class ModelTrainer:
 
             except:
                 # TODO: d
+                print("Lỗi trong vòng lặp")
                 traceback.print_exc()
                 # d
 
