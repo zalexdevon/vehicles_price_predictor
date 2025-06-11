@@ -2,7 +2,6 @@ from Mylib import (
     myfuncs,
     myclasses,
     sk_myfuncs,
-    sk_create_model,
 )
 import numpy as np
 import time
