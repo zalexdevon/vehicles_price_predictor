@@ -24,11 +24,7 @@ def transform_data(
     df_val_corrected,
     feature_transformer,
     target_transformer,
-    target_col,
 ):
-    # TODO: d
-    print("Update lần 1")
-    # d
     # Get cột mục tiêu
     target_col = myfuncs.get_target_col_from_df(df_train_corrected)
 
