@@ -1,4 +1,4 @@
-from Mylib import myfuncs, sk_create_model, sk_myfuncs
+from Mylib import myfuncs, sk_create_model, sk_myfuncs, sk_create_object
 from Mylib.myclasses import FeatureColumnsTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
@@ -50,11 +50,9 @@ def transform_data(
 
 
 def create_model(param):
-    model_name = param.pop("model_name")
-    param.pop("list_after_transformer")
-    param.pop("train_val_path")
+    model = sk_create_object.ObjectCreatorFromDict(param, "model").next()
 
-    return sk_create_model.create_model(model_name, param)
+    return model
 
 
 def create_train_val_data(param):
