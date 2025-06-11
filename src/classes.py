@@ -113,7 +113,7 @@ class ModelTrainer:
         # Get folder của run
         run_folders = funcs.get_run_folders(self.model_training_path)
 
-        if len(run_folders) > 0:
+        if len(run_folders) >= 2:  # Ngược lại tức là lần run đầu tiên
             # Get list param còn lại
             for run_folder in run_folders:
                 list_param = myfuncs.load_python_object(
