@@ -29,13 +29,12 @@ class ModelTrainer:
         self,
     ):
         # Tạo thư mục lưu kết quả mô hình tốt nhất
+        list_param = self.get_list_param()
         model_training_run_path = Path(
             f"{self.model_training_path}/{self.get_folder_name()}"
         )
-        myfuncs.create_directories([model_training_run_path])
 
-        # Get list_param và lưu lại
-        list_param = self.get_list_param()
+        myfuncs.create_directories([model_training_run_path])
         myfuncs.save_python_object(
             Path(f"{model_training_run_path}/list_param.pkl"), list_param
         )
@@ -118,7 +117,7 @@ class ModelTrainer:
         # Get folder của run
         run_folders = funcs.get_run_folders(self.model_training_path)
 
-        if len(run_folders) >= 2:  # Ngược lại tức là lần run đầu tiên
+        if len(run_folders) > 0:  # Ngược lại tức là lần run đầu tiên
             # Get list param còn lại
             for run_folder in run_folders:
                 list_param = myfuncs.load_python_object(
