@@ -52,6 +52,7 @@ def transform_data(
 def create_model(param):
     model_name = param.pop("model_name")
     param.pop("list_after_transformer")
+    param.pop("train_val_path")
 
     return sk_create_model.create_model(model_name, param)
 
