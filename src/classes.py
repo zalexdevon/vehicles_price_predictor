@@ -97,7 +97,9 @@ class ModelTrainer:
                 # Giải phóng bộ nhớ
 
             except:
+                print("\n========Error trong vòng lặp train model=============\n")
                 traceback.print_exc()
+                print("\n========Error trong vòng lặp train model=============\n")
                 continue
 
         # In ra kết quả của model tốt nhất
