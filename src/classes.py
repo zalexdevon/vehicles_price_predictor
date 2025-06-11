@@ -255,3 +255,101 @@ class ModelEvaluator:
         log_message += model_result_text
 
         return log_message
+
+
+class ModelTrainingResultGatherer:
+    MODEL_TRAINING_FOLDER_PATH = "artifacts/model_training"
+
+    def __init__(self, scoring):
+        self.scoring = scoring
+        pass
+
+    def next(self):
+        model_training_paths = [
+            f"{self.MODEL_TRAINING_FOLDER_PATH}/{item}"
+            for item in os.listdir(self.MODEL_TRAINING_FOLDER_PATH)
+        ]
+
+        result = []
+        for folder_path in model_training_paths:
+            result += self.get_result_from_1folder(folder_path)
+
+        # Sort theo val_scoring (ở vị trí thứ 1)
+        result = sorted(
+            result,
+            key=lambda item: item[1],
+            reverse=funcs.get_reverse_param_in_sorted(self.scoring),
+        )
+        return result
+
+    def get_result_from_1folder(self, folder_path):
+        run_folder_names = funcs.get_run_folders(folder_path)
+        run_folder_paths = [f"{folder_path}/{item}" for item in run_folder_names]
+
+        list_result = []
+        for folder_path in run_folder_paths:
+            result = myfuncs.load_python_object(f"{folder_path}/result.pkl")
+            list_result.append(result)
+
+        return list_result
+
+
+class LoggingDisplayer:
+    DATE_FORMAT = "%d-%m-%Y-%H-%M-%S"
+    READ_FOLDER_NAME = "artifacts/logs"
+    WRITE_FOLDER_NAME = "artifacts/gather_logs"
+
+    # Tạo thư mục
+    os.makedirs(WRITE_FOLDER_NAME, exist_ok=True)
+
+    def __init__(self, mode, file_name=None, start_time=None, end_time=None):
+        self.mode = mode
+        self.file_name = file_name
+        self.start_time = start_time
+        self.end_time = end_time
+
+        if self.file_name is None:
+            self.file_name = f"{datetime.now().strftime(self.DATE_FORMAT)}.log"
+
+    def print_and_save(self):
+        file_path = f"{self.WRITE_FOLDER_NAME}/{self.file_name}"
+
+        if self.mode == "all":
+            result = self.gather_all_logging_result()
+        else:
+            result = self.gather_logging_result_from_start_to_end_time()
+
+        print(result)
+        print(f"Lưu result tại {file_path}")
+        myfuncs.write_content_to_file(result, file_path)
+
+    def gather_all_logging_result(self):
+        logs_filenames = self.get_logs_filenames()
+
+        return self.read_from_logs_filenames(logs_filenames)
+
+    def gather_logging_result_from_start_to_end_time(self):
+        logs_filenames = pd.Series(self.get_logs_filenames())
+        logs_filenames = logs_filenames[
+            (logs_filenames > self.start_time) & (logs_filenames < self.end_time)
+        ].tolist()
+
+        return self.read_from_logs_filenames(logs_filenames)
+
+    def read_from_logs_filenames(self, logs_filenames):
+        result = ""
+        for logs_filename in logs_filenames:
+            logs_filepath = f"{self.READ_FOLDER_NAME}/{logs_filename}.log"
+            content = myfuncs.read_content_from_file(logs_filepath)
+            result += f"{content}\n\n"
+
+        return result
+
+    def get_logs_filenames(self):
+        logs_filenames = os.listdir(self.READ_FOLDER_NAME)
+        date_format_in_filename = f"{self.DATE_FORMAT}.log"
+        logs_filenames = [
+            datetime.strptime(item, date_format_in_filename) for item in logs_filenames
+        ]
+        logs_filenames = sorted(logs_filenames)  # Sắp xếp theo thời gian tăng dần
+        return logs_filenames
