@@ -7,8 +7,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 
 
-
-
 class BeforeTransformer(BaseEstimator, TransformerMixin):
     def __init__(self) -> None:
         super().__init__()
@@ -21,11 +19,7 @@ class BeforeTransformer(BaseEstimator, TransformerMixin):
         df = X
 
         # Xóa các cột không liên quan
-        df = df.drop(
-            columns=[
-                "vin", 'sellingprice', 'saledate'
-            ]
-        )
+        df = df.drop(columns=["vin", "sellingprice", "saledate"])
 
         # Đổi tên cột
         rename_dict = {
@@ -43,16 +37,20 @@ class BeforeTransformer(BaseEstimator, TransformerMixin):
             "seller": "seller_nom",
             "mmr": "mmr_num",
             "sellingprice_cat": "sellingprice_cat_target",
-
-
         }
-
 
         df = df.rename(columns=rename_dict)
 
         # Sắp xếp các cột theo đúng thứ tự
-        numeric_cols, numericCat_cols, cat_cols, binary_cols, nominal_cols, ordinal_cols, target_col = myfuncs.get_different_types_cols_from_df_4(df)
-
+        (
+            numeric_cols,
+            numericCat_cols,
+            cat_cols,
+            binary_cols,
+            nominal_cols,
+            ordinal_cols,
+            target_col,
+        ) = myfuncs.get_different_types_cols_from_df(df)
 
         df = df[
             numeric_cols
@@ -62,8 +60,6 @@ class BeforeTransformer(BaseEstimator, TransformerMixin):
             + ordinal_cols
             + [target_col]
         ]
-
-
 
         return df
 
@@ -83,7 +79,7 @@ class MissingValueHandler(BaseEstimator, TransformerMixin):
         df = X
 
         numeric_cols, numericCat_cols, cat_cols, _, _, _, target_col = (
-            myfuncs.get_different_types_cols_from_df_4(df)
+            myfuncs.get_different_types_cols_from_df(df)
         )
 
         self.handler = ColumnTransformer(
@@ -106,7 +102,7 @@ class MissingValueHandler(BaseEstimator, TransformerMixin):
         df = X
 
         numeric_cols, numericCat_cols, cat_cols, _, _, _, target_col = (
-            myfuncs.get_different_types_cols_from_df_4(df)
+            myfuncs.get_different_types_cols_from_df(df)
         )
 
         df = self.handler.transform(df)
@@ -137,7 +133,7 @@ class AfterTransformer(BaseEstimator, TransformerMixin):
         self.cols = df.columns.tolist()
 
         numeric_cols, numericCat_cols, cat_cols, _, _, _, target_col = (
-            myfuncs.get_different_types_cols_from_df_4(df)
+            myfuncs.get_different_types_cols_from_df(df)
         )
 
         # Chuyển đổi về đúng kiểu dữ liệu
