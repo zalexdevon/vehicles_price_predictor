@@ -66,8 +66,9 @@ class ModelTrainer:
 
         # In ra kết quả của model tốt nhất
         best_model_result = myfuncs.load_python_object(best_model_result_path)
-        best_model_result_text = f"Model tốt nhất\n{best_model_result[0]}\n -> Val {self.scoring}: {best_model_result[1]}, Train {self.scoring}: {best_model_result[2]}\n"
-        print(best_model_result_text)
+        print(
+            f"Model tốt nhất\n{best_model_result[0]}\n -> Val {self.scoring}: {best_model_result[1]}, Train {self.scoring}: {best_model_result[2]}\n"
+        )
 
     def train_model(
         self,
@@ -102,8 +103,9 @@ class ModelTrainer:
             )
 
             # In kết quả
-            training_result_text = f"{param}\n -> Val {self.scoring}: {val_scoring}, Train {self.scoring}: {train_scoring}\n"
-            print(training_result_text)
+            print(
+                f"{param}\n -> Val {self.scoring}: {val_scoring}, Train {self.scoring}: {train_scoring}\n"
+            )
 
             # Cập nhật best model và lưu lại
             val_scoring_find_best_model = (
