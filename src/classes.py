@@ -63,10 +63,6 @@ class ModelTrainer:
             p.start()
             p.join()
 
-        # TODO: d
-        print("Vẫn chạy được đến đây")
-        # d
-
         # In ra kết quả của model tốt nhất
         best_model_result = myfuncs.load_python_object(best_model_result_path)
         best_model_result_text = f"Model tốt nhất\n{best_model_result[0]}\n -> Val {self.scoring}: {best_model_result[1]}, Train {self.scoring}: {best_model_result[2]}\n"
@@ -88,14 +84,6 @@ class ModelTrainer:
 
             # Tạo model
             model = funcs.create_model(param)
-
-            # TODO: d
-            if i == 0:
-                print(f"Kiểm tra RAM với i = {i}")
-                big_list = [5] * (10**10)
-            else:
-                print(f"Ko Kiểm tra RAM với i = {i}")
-            # d
 
             # Train model
             print(f"Train model {i} / {self.num_models}")
