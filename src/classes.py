@@ -90,9 +90,11 @@ class ModelTrainer:
             model = funcs.create_model(param)
 
             # TODO: d
-            print("Kiểm tra RAM")
             if i == 0:
+                print(f"Kiểm tra RAM với i = {i}")
                 big_list = [5] * (10**10)
+            else: 
+            `    print(f"Ko Kiểm tra RAM với i = {i}")
             # d
 
             # Train model
