@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 from src import const, funcs
 import traceback
+from multiprocessing import Process, Queue
 
 
 class ModelTrainer:
@@ -40,7 +41,8 @@ class ModelTrainer:
         )
 
         # Get các tham số cần thiết khác
-        best_val_scoring = -np.inf
+        best_val_scoring_path = Path(f"{model_training_run_path}/best_val_scoring.pkl")
+        myfuncs.save_python_object(best_val_scoring_path, -np.inf)
         sign_for_val_scoring_find_best_model = (
             self.get_sign_for_val_scoring_to_find_best_model()
         )
@@ -48,64 +50,90 @@ class ModelTrainer:
         best_model_result_path = Path(f"{model_training_run_path}/best_result.pkl")
 
         for i, param in enumerate(list_param):
-            try:
-                # Tạo train, val data
-                train_features, train_target, val_features, val_target = (
-                    funcs.create_train_val_data(param)
-                )
+            p = Process(
+                target=self.train_model,
+                args=(
+                    param,
+                    i,
+                    sign_for_val_scoring_find_best_model,
+                    best_model_result_path,
+                    best_val_scoring_path,
+                ),
+            )
+            p.start()
+            p.join()
 
-                # Tạo model
-                model = funcs.create_model(param)
-
-                # Train model
-                print(f"Train model {i} / {self.num_models}")
-                model.fit(train_features, train_target)
-
-                train_scoring = sk_myfuncs.evaluate_model_on_one_scoring(
-                    model,
-                    train_features,
-                    train_target,
-                    self.scoring,
-                )
-                val_scoring = sk_myfuncs.evaluate_model_on_one_scoring(
-                    model,
-                    val_features,
-                    val_target,
-                    self.scoring,
-                )
-
-                # In kết quả
-                training_result_text = f"{param}\n -> Val {self.scoring}: {val_scoring}, Train {self.scoring}: {train_scoring}\n"
-                print(training_result_text)
-
-                # Cập nhật best model và lưu lại
-                val_scoring_find_best_model = (
-                    val_scoring * sign_for_val_scoring_find_best_model
-                )
-
-                if best_val_scoring < val_scoring_find_best_model:
-                    best_val_scoring = val_scoring_find_best_model
-
-                    # Lưu kết quả
-                    myfuncs.save_python_object(
-                        best_model_result_path,
-                        (param, val_scoring, train_scoring),
-                    )
-
-                # Giải phóng bộ nhớ
-
-            except:
-                # TODO: d
-                print("Lỗi trong vòng lặp")
-                traceback.print_exc()
-                # d
-
-                continue
+        # TODO: d
+        print("Vẫn chạy được đến đây")
+        # d
 
         # In ra kết quả của model tốt nhất
         best_model_result = myfuncs.load_python_object(best_model_result_path)
         best_model_result_text = f"Model tốt nhất\n{best_model_result[0]}\n -> Val {self.scoring}: {best_model_result[1]}, Train {self.scoring}: {best_model_result[2]}\n"
         print(best_model_result_text)
+
+    def train_model(
+        self,
+        param,
+        i,
+        sign_for_val_scoring_find_best_model,
+        best_model_result_path,
+        best_val_scoring_path,
+    ):
+        try:
+            # Tạo train, val data
+            train_features, train_target, val_features, val_target = (
+                funcs.create_train_val_data(param)
+            )
+
+            # Tạo model
+            model = funcs.create_model(param)
+
+            # TODO: d
+            print("Kiểm tra RAM")
+            big_list = [5] * (10**10)
+            # d
+
+            # Train model
+            print(f"Train model {i} / {self.num_models}")
+            model.fit(train_features, train_target)
+
+            train_scoring = sk_myfuncs.evaluate_model_on_one_scoring(
+                model,
+                train_features,
+                train_target,
+                self.scoring,
+            )
+            val_scoring = sk_myfuncs.evaluate_model_on_one_scoring(
+                model,
+                val_features,
+                val_target,
+                self.scoring,
+            )
+
+            # In kết quả
+            training_result_text = f"{param}\n -> Val {self.scoring}: {val_scoring}, Train {self.scoring}: {train_scoring}\n"
+            print(training_result_text)
+
+            # Cập nhật best model và lưu lại
+            val_scoring_find_best_model = (
+                val_scoring * sign_for_val_scoring_find_best_model
+            )
+
+            best_val_scoring = myfuncs.load_python_object(best_val_scoring_path)
+
+            if best_val_scoring < val_scoring_find_best_model:
+                myfuncs.save_python_object(
+                    best_val_scoring_path, val_scoring_find_best_model
+                )
+
+                # Lưu kết quả
+                myfuncs.save_python_object(
+                    best_model_result_path,
+                    (param, val_scoring, train_scoring),
+                )
+        except:
+            print("Lỗi")
 
     def get_list_param(self):
         # Get full_list_param
