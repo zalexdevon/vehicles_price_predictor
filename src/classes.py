@@ -50,11 +50,12 @@ class ModelTrainer:
         best_model_result_path = Path(f"{model_training_run_path}/best_result.pkl")
 
         for i, param in enumerate(list_param):
+            print(f"Train model {i} / {self.num_models}")
+            print(f"Param: {param}")
             p = Process(
                 target=self.train_model,
                 args=(
                     param,
-                    i,
                     sign_for_val_scoring_find_best_model,
                     best_model_result_path,
                     best_val_scoring_path,
@@ -71,7 +72,6 @@ class ModelTrainer:
     def train_model(
         self,
         param,
-        i,
         sign_for_val_scoring_find_best_model,
         best_model_result_path,
         best_val_scoring_path,
@@ -86,7 +86,6 @@ class ModelTrainer:
             model = funcs.create_model(param)
 
             # Train model
-            print(f"Train model {i} / {self.num_models}")
             model.fit(train_features, train_target)
 
             train_scoring = sk_myfuncs.evaluate_model_on_one_scoring(
