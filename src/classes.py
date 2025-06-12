@@ -91,7 +91,8 @@ class ModelTrainer:
 
             # TODO: d
             print("Kiểm tra RAM")
-            big_list = [5] * (10**10)
+            if i == 0:
+                big_list = [5] * (10**10)
             # d
 
             # Train model
