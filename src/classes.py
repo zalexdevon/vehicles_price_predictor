@@ -47,6 +47,7 @@ class ModelTrainer:
         )
 
         best_model_result_path = Path(f"{model_training_run_path}/best_result.pkl")
+        myfuncs.save_python_object(best_model_result_path, -np.inf)
 
         for i, param in enumerate(list_param):
             print(f"Train model {i} / {self.num_models}")
