@@ -248,7 +248,7 @@ class ModelEvaluator:
 
 
 class ModelTrainingResultGatherer:
-    MODEL_TRAINING_FOLDER_PATH = "artifacts/model_training"
+    MODEL_TRAINING_FOLDER_PATH = Path("artifacts/model_training")
 
     def __init__(self, scoring):
         self.scoring = scoring
