@@ -34,7 +34,6 @@ class ModelTrainer:
         model_training_run_path = Path(
             f"{self.model_training_path}/{self.get_folder_name()}"
         )
-
         myfuncs.create_directories([model_training_run_path])
         myfuncs.save_python_object(
             Path(f"{model_training_run_path}/list_param.pkl"), list_param
@@ -66,8 +65,10 @@ class ModelTrainer:
 
         # In ra kết quả của model tốt nhất
         best_model_result = myfuncs.load_python_object(best_model_result_path)
+        print("Model tốt nhất")
+        print(f"Param: {best_model_result[0]}")
         print(
-            f"Model tốt nhất\n{best_model_result[0]}\n -> Val {self.scoring}: {best_model_result[1]}, Train {self.scoring}: {best_model_result[2]}\n"
+            f"Val scoring: {best_model_result[1]}, Train scoring: {best_model_result[2]}"
         )
 
     def train_model(
@@ -103,9 +104,7 @@ class ModelTrainer:
             )
 
             # In kết quả
-            print(
-                f"{param}\n -> Val {self.scoring}: {val_scoring}, Train {self.scoring}: {train_scoring}\n"
-            )
+            print(f"Val scoring: {val_scoring}, Train scoring: {train_scoring}")
 
             # Cập nhật best model và lưu lại
             val_scoring_find_best_model = (
@@ -124,8 +123,9 @@ class ModelTrainer:
                     best_model_result_path,
                     (param, val_scoring, train_scoring),
                 )
-        except:
-            print("Lỗi")
+        except Exception as e:
+            print(f"Lỗi: {e}")
+            traceback.print_exc()
 
     def get_list_param(self):
         # Get full_list_param
@@ -193,18 +193,9 @@ class BestResultSearcher:
         list_result = sorted(
             list_result,
             key=lambda item: item[1],
-            reverse=self.get_reverse_param_in_sorted(),
+            reverse=funcs.get_reverse_param_in_sorted(self.scoring),
         )  # Sort theo val scoring
         return list_result[0]
-
-    def get_reverse_param_in_sorted(self):
-        if self.scoring in const.SCORINGS_PREFER_MAXIMUM:
-            return True
-
-        if self.scoring in const.SCORINGS_PREFER_MININUM:
-            return False
-
-        raise ValueError(f"Chưa định nghĩa cho {self.scoring}")
 
 
 class ModelRetrainer:
@@ -234,9 +225,6 @@ class ModelEvaluator:
         self.model_evaluation_on_val_path = model_evaluation_on_val_path
 
     def next(self):
-        # Đánh giá
-        model_result_text = "===============Kết quả đánh giá model==================\n"
-
         # Đánh giá model trên tập val
         result_text, val_confusion_matrix = myclasses.ClassifierEvaluator(
             model=self.model,

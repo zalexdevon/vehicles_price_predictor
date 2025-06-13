@@ -3,6 +3,7 @@ from Mylib.myclasses import FeatureColumnsTransformer
 from sklearn.preprocessing import OrdinalEncoder
 import pandas as pd
 import os
+from src import const
 
 
 def create_feature_and_target_transformer(
@@ -111,3 +112,13 @@ def create_train_test_data(param, df_test):
     test_features = after_transformer.transform(test_features)
 
     return train_features, train_target, test_features, test_target
+
+
+def get_reverse_param_in_sorted(scoring):
+    if scoring in const.SCORINGS_PREFER_MAXIMUM:
+        return True
+
+    if scoring in const.SCORINGS_PREFER_MININUM:
+        return False
+
+    raise ValueError(f"Chưa định nghĩa cho {scoring}")
